@@ -19,11 +19,18 @@ function table() {
     //  and store them as the headers of the table.
     let tableHeaders = Object.keys(data[0]);
 
+
     // You should append these headers to the <table> element as <th> objects inside
     // a <th>
     // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
 
-    // YOUR CODE HERE
+    let header = table.append("thead").append("tr")
+    header
+      .selectAll("th")
+      .data(tableHeaders)
+      .enter()
+      .append("th")
+      .text(function(d) { return d; });
 
     // Then, you add a row for each row of the data.  Within each row, you
     // add a cell for each piece of data in the row.
@@ -31,7 +38,42 @@ function table() {
     // Then, for each table row, you add a table cell.  You can do this with
     // two different calls to enter() and data(), or with two different loops.
 
-    // YOUR CODE HERE
+    var tableArray = [];
+    data.forEach(function(d, i){
+        // now we add another data object value, a calculated value.
+        // here we are making strings into numbers using type coercion
+        d.year = +d.year;
+        d.poverty = +d.poverty;
+        d.murder = d.murder;
+        d.unemployment = d.unemployment;
+        
+        // Add a new array with the values of each:
+        tableArray.push([d.year, d.poverty, d.murder, d.unemployment]);
+    });
+    
+    console.log(data);
+    console.log(tableArray);
+  
+
+
+
+
+    let tablebody = table.append("tbody");
+    rows = tablebody
+            .selectAll("tr")
+            .data(tableArray)
+            .enter()
+            .append("tr");
+    cells = rows.selectAll("td")
+            .data( function (d) {
+              console.log(d);
+              return d;
+            })
+            .enter()
+            .append("td")
+            .text(function(d) {
+                return d;
+            });
 
 
     // Then, add code to allow for brushing.  Note, this is handled differently
