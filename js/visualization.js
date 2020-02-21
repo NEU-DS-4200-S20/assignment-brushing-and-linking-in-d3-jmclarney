@@ -54,7 +54,6 @@
     spUnemployMurder.selectionDispatcher().on(dispatchString, function(selectedData) {
       lcYearPoverty.updateSelection(selectedData);
       tableData.updateSelection(selectedData);
-      // ADD CODE TO HAVE TABLE UPDATE ITS SELECTION AS WELL
     });
 
     // When the table is updated via brushing, tell the line chart and scatterplot
@@ -64,4 +63,5 @@
     
     });
 
-})());
+  }) 
+}));

@@ -75,11 +75,6 @@ function table() {
     // and when the mouse is down, keep track of any rows that have been mouseover'd
 
 
-    // var initialRowSelected;
-    // var rowsSelected = [];
-    // var isMouseDown = false;
-    // var lastMouseOverRow = null;
-
     var isMouseDown = false;
     var rowsSelected = [];
 
@@ -88,6 +83,7 @@ function table() {
 
       // Get the name of our dispatcher's event
       let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
+      console.log('dispatch string:', dispatchString);
 
       // Let other charts know
       dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
@@ -106,7 +102,6 @@ function table() {
             })
 
             .on("mouseout", function(d, i){
-              console.log("rowsSelected:", rowsSelected);
               d3.select(this).attr("class", "unselected");
               rowsSelected.forEach(element => highlight(element));
       
@@ -155,7 +150,7 @@ function table() {
                 return d;
             });
 
-
+    selectableElements = rows;
     // function brushDrag(element, event, d, i){
     //   hoverTarget = event.target;
     //   if (dragTarget){
@@ -174,22 +169,7 @@ function table() {
     //     dragTarget = null;
     // };
 
-    function getRow(element){
-        for (var k=0,e=element.parentNode; e = e.previousSibling; ++k);
-        return k;
-    };
 
-  
-
-  
-
-  
-
-    // // ADD MORE HERE
-
-    // })();
-
-// DONT TOUCH
     return chart;
   }
 
@@ -204,6 +184,18 @@ function table() {
   // select the relevant elements here (linking)
   chart.updateSelection = function (selectedData) {
     if (!arguments.length) return;
+
+    console.log('in updateSelection');
+
+    selectableElements.classed("selected", d => {
+      console.log('selectedData:', selectedData);
+      return selectedData.includes(d)
+    });
+
+    // Select an element if its datum was selected
+    d3.selectAll('td').classed("selected", d => {
+      return selectedData.includes(d)
+    });
 
     // Select an element if its datum was selected
     d3.selectAll('tr').classed("selected", d => {

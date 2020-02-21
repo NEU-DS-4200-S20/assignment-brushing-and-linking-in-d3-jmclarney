@@ -1,4 +1,4 @@
-<a href="https://neu-ds-4200-s20.github.io/assignment-brushing-and-linking-in-d3-jmclarney/">My GitHub Page</a>
+Assignment can be found here: <a href="https://neu-ds-4200-s20.github.io/assignment-brushing-and-linking-in-d3-jmclarney/">My GitHub Page</a>
 
 # Assignment: Brushing and Linking
 
