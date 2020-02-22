@@ -62,20 +62,21 @@ function table() {
     // HINT for brushing on the table: keep track of whether the mouse is down or up, 
     // and when the mouse is down, keep track of any rows that have been mouseover'd
 
+    // HHH Highlighting functionality
+
     // adding highlight to given row
     function highlight(row) {
       d3.select(row).classed("selected", true);
     }
-
     // removing the highlight of the given row
     function highlight(row) {
       d3.select(row).classed("selected", false);
     }
-
     // remove all highlights
     function removeHighlights() {
       d3.selectAll("tr").classed("selected", false);
     }
+    // #### END HIGHLIGHTING FUNCTIONALITY #####
 
     // to track clicks
     var isMouseDown = false;    
