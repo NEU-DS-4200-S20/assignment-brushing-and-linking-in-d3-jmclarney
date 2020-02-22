@@ -19,7 +19,6 @@ function table() {
     //  and store them as the headers of the table.
     let tableHeaders = Object.keys(data[0]);
 
-
     // You should append these headers to the <table> element as <th> objects inside
     // a <th>
     // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
@@ -39,55 +38,40 @@ function table() {
     // two different calls to enter() and data(), or with two different loops.
 
 
-
-    var tableArray = [];
-    data.forEach(function(d, i){
-        // now we add another data object value, a calculated value.
-        // here we are making strings into numbers using type coercion
-        d.year = +d.year;
-        d.poverty = +d.poverty;
-        d.murder = d.murder;
-        d.unemployment = d.unemployment;
-        
-        // Add a new array with the values of each:
-        tableArray.push([d.year, d.poverty, d.murder, d.unemployment]);
-    });
-    
-    console.log(tableArray);
-
-
     var dragTarget = null,
-        hoverTarget = null,
-        htmlTable = null,
-        erase = false;
+    hoverTarget = null,
+    htmlTable = null,
+    erase = false;
 
-    let tablebody = table.append("tbody");
-    
-    // Then, add code to allow for brushing.  Note, this is handled differently
-    // than the line chart and scatter plot because we are not using an SVG.
-    // Look at the readme of the assignment for hints.
-    // Note: you'll also have to implement linking in the updateSelection function
-    // at the bottom of this function.
-    // Remember that you have to dispatch that an object was highlighted.  Look
-    // in linechart.js and scatterplot.js to see how to interact with the dispatcher.
+  let tablebody = table.append("tbody");
 
-    // HINT for brushing on the table: keep track of whether the mouse is down or up, 
-    // and when the mouse is down, keep track of any rows that have been mouseover'd
+  // Then, add code to allow for brushing.  Note, this is handled differently
+  // than the line chart and scatter plot because we are not using an SVG.
+  // Look at the readme of the assignment for hints.
+  // Note: you'll also have to implement linking in the updateSelection function
+  // at the bottom of this function.
+  // Remember that you have to dispatch that an object was highlighted.  Look
+  // in linechart.js and scatterplot.js to see how to interact with the dispatcher.
+
+  // HINT for brushing on the table: keep track of whether the mouse is down or up, 
+  // and when the mouse is down, keep track of any rows that have been mouseover'd
 
 
-    var isMouseDown = false;
-    var rowsSelected = [];
+  var isMouseDown = false;
+  var rowsSelected = [];
 
-    function highlight(rowElement) {
-      d3.select(rowElement).attr("class", "selected");
+  function highlight(rowElement) {
+    d3.select(rowElement).classed("selected", true);
 
-      // Get the name of our dispatcher's event
-      let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
-      console.log('dispatch string:', dispatchString);
+    // Get the name of our dispatcher's event
+  
+  }
 
-      // Let other charts know
-      dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
-    }
+  function unhighlight(rowElement) {
+    d3.select(rowElement).classed("selected", false);
+
+    function unhighlightAll(rowElement) {
+      d3.selectAll("tr").classed("selected", false);
 
     rows = tablebody
             .selectAll("tr")
@@ -97,61 +81,38 @@ function table() {
 
             // row is the actual array of the row the mouse is over
             // index is the index of the row in the table
-            .on("mouseover", function(d, i){
-              highlight(this);
+            .on("mouseover", function(d, i, elements){
+              highlight(elements[i]);
+              let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
+              console.log('dispatch string:', dispatchString);
+              dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
             })
 
-            .on("mouseout", function(d, i){
-              d3.select(this).attr("class", "unselected");
-              rowsSelected.forEach(element => highlight(element));
+            .on("mouseout", function(d, i, elements){
+              unhighlight(elements[i])
       
             })
 
-            
-            .on('mousedown', function(d, i){
+            .on('mousedown', function(d, i, elements){
               console.log('in mousedown');
+              unhighlightAll();
               isMouseDown = true;
-              d3.selectAll("tr").attr("class", "unselected");
-              rowsSelected = [];
-              highlight(this);
-              //rowsSelected.push(this);
-              //brushStart(this, event, d, i);
+              highlight(elements[i]);
+              let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
+              console.log('dispatch string:', dispatchString);
+
+              // Let other charts know
+              dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
               
-            })
-
-            .on("mousemove", function(d, i){
-              //brushDrag(this, event, d, i);
-              if ( !(this in rowsSelected) && isMouseDown ) {
-                rowsSelected.push(this);
-              }
-          
-
             })
 
             .on("mouseup", function(d, i){
               console.log('in mouse up');
-              rowsSelected.push(this);
-              rowsSelected.forEach(element => highlight(element));
               isMouseDown = false;
-              //rowsSelected = [];
 
-              //brushStop(this, event, d, i);
             });
 
-            
-    cells = rows.selectAll("td")
-            .data( function (d) {
-              console.log(d);
-              return d;
-            })
-            .enter()
-            .append("td")
-            .text(function(d) {
-                return d;
-            });
-
-    selectableElements = rows;
-    // function brushDrag(element, event, d, i){
+            // function brushDrag(element, event, d, i){
     //   hoverTarget = event.target;
     //   if (dragTarget){
     //       console.log("drag: row:", getRow(hoverTarget), 'i:', i);
@@ -185,22 +146,16 @@ function table() {
   chart.updateSelection = function (selectedData) {
     if (!arguments.length) return;
 
-    console.log('in updateSelection');
-
-    selectableElements.classed("selected", d => {
-      console.log('selectedData:', selectedData);
+    // Select the row if the row was selected
+    d3.selectAll('tr').classed("selected", d => {
       return selectedData.includes(d)
     });
 
-    // Select an element if its datum was selected
+    // Select the cell if it was selected
     d3.selectAll('td').classed("selected", d => {
       return selectedData.includes(d)
     });
 
-    // Select an element if its datum was selected
-    d3.selectAll('tr').classed("selected", d => {
-      return selectedData.includes(d)
-    });
   };
 
   return chart;

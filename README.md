@@ -1,8 +1,8 @@
-Assignment can be found here: <a href="https://neu-ds-4200-s20.github.io/assignment-brushing-and-linking-in-d3-jmclarney/">My GitHub Page</a>
-
 # Assignment: Brushing and Linking
 
 This assignment will help you get started with brushing and linking. Please look through all these materials so you understand how to run and organize your code.
+
+**GITHUB PAGE URL: https://neu-ds-4200-s20.github.io/assignment-brushing-and-linking-in-d3-harimuralikrishnan/**
 
 ## Setup
 
