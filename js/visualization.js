@@ -57,7 +57,7 @@
     });
 
     // When the table is updated via brushing, tell the line chart and scatterplot
-    // in the same manner as above, update the scatterplot and linchart based on the table activities
+    // same thing as above, update the scatterplot and linchart based on the table activities
     tableData.selectionDispatcher().on(dispatchString, function(selectedData) {
       lcYearPoverty.updateSelection(selectedData);
       spUnemployMurder.updateSelection(selectedData);

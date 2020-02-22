@@ -61,10 +61,6 @@ tr.selected {
   background-color: pink;
 }
 
-tr.unselected {
-	background-color: transparent;
-}
-
 /* Pretty table layout */
 table {
   font-size: 14px;

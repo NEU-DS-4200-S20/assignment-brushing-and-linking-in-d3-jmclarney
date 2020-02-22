@@ -62,17 +62,23 @@ function table() {
     // HINT for brushing on the table: keep track of whether the mouse is down or up, 
     // and when the mouse is down, keep track of any rows that have been mouseover'd
 
+    // adding highlight to given row
     function highlight(row) {
       d3.select(row).classed("selected", true);
     }
 
+    // removing the highlight of the given row
+    function highlight(row) {
+      d3.select(row).classed("selected", false);
+    }
+
+    // remove all highlights
     function removeHighlights() {
       d3.selectAll("tr").classed("selected", false);
     }
 
     // to track clicks
     var isMouseDown = false;    
-
     // MAIN select all the rows
     d3.selectAll("tr")
 
@@ -80,8 +86,9 @@ function table() {
 
     // handles simply highlighting the row being hovered over
     .on("mouseover", (d, i, elements) => {
-      d3.select(elements[i]).classed("mouseover", true)
+      highlight(elements[i]);
       if (isMouseDown) {
+        // highlightall of the elements mousedover'd
         highlight(elements[i]);
         //track whats been hovered on to pass to other graphs so they can be interactive
         let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
@@ -91,7 +98,8 @@ function table() {
 
     // now you know the mouse has moved out of the row area, so you de-highlight
     .on("mouseout", (d, i, elements) => {
-      d3.select(elements[i]).classed("mouseover", false)
+      unhighlight(elements[i]);
+      //d3.select(elements[i]).classed("mouseover", false)
     })
     // ############## END MOVING HANDLERS ###############
 
@@ -145,5 +153,6 @@ function table() {
 
   };
 
+  // final product
   return chart;
 }
