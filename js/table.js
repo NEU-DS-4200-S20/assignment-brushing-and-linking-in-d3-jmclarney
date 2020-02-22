@@ -38,99 +38,86 @@ function table() {
     // two different calls to enter() and data(), or with two different loops.
 
 
-    var dragTarget = null,
-    hoverTarget = null,
-    htmlTable = null,
-    erase = false;
+    // Just setting up the table really..
+    let tablebody = table.append("tbody");
+    let rows = tablebody
+        .selectAll("tr")
+        .data(data)
+        .enter()
+        .append("tr");
+    let cells = rows.selectAll("td")
+        .data(d => d3.values(d))
+        .enter()
+        .append("td")
+        .text(d => d);     
 
-  let tablebody = table.append("tbody");
+    // Then, add code to allow for brushing.  Note, this is handled differently
+    // than the line chart and scatter plot because we are not using an SVG.
+    // Look at the readme of the assignment for hints.
+    // Note: you'll also have to implement linking in the updateSelection function
+    // at the bottom of this function.
+    // Remember that you have to dispatch that an object was highlighted.  Look
+    // in linechart.js and scatterplot.js to see how to interact with the dispatcher.
 
-  // Then, add code to allow for brushing.  Note, this is handled differently
-  // than the line chart and scatter plot because we are not using an SVG.
-  // Look at the readme of the assignment for hints.
-  // Note: you'll also have to implement linking in the updateSelection function
-  // at the bottom of this function.
-  // Remember that you have to dispatch that an object was highlighted.  Look
-  // in linechart.js and scatterplot.js to see how to interact with the dispatcher.
+    // HINT for brushing on the table: keep track of whether the mouse is down or up, 
+    // and when the mouse is down, keep track of any rows that have been mouseover'd
 
-  // HINT for brushing on the table: keep track of whether the mouse is down or up, 
-  // and when the mouse is down, keep track of any rows that have been mouseover'd
+    function highlight(row) {
+      d3.select(row).classed("selected", true);
+    }
 
-
-  var isMouseDown = false;
-  var rowsSelected = [];
-
-  function highlight(rowElement) {
-    d3.select(rowElement).classed("selected", true);
-
-    // Get the name of our dispatcher's event
-  
-  }
-
-  function unhighlight(rowElement) {
-    d3.select(rowElement).classed("selected", false);
-
-    function unhighlightAll(rowElement) {
+    function removeHighlights() {
       d3.selectAll("tr").classed("selected", false);
+    }
 
-    rows = tablebody
-            .selectAll("tr")
-            .data(tableArray)
-            .enter()
-            .append("tr")
+    // to track clicks
+    var isMouseDown = false;    
 
-            // row is the actual array of the row the mouse is over
-            // index is the index of the row in the table
-            .on("mouseover", function(d, i, elements){
-              highlight(elements[i]);
-              let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
-              console.log('dispatch string:', dispatchString);
-              dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
-            })
+    // MAIN select all the rows
+    d3.selectAll("tr")
 
-            .on("mouseout", function(d, i, elements){
-              unhighlight(elements[i])
-      
-            })
+    // ############## MOVING THE CURSOR ##############
 
-            .on('mousedown', function(d, i, elements){
-              console.log('in mousedown');
-              unhighlightAll();
-              isMouseDown = true;
-              highlight(elements[i]);
-              let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
-              console.log('dispatch string:', dispatchString);
+    // handles simply highlighting the row being hovered over
+    .on("mouseover", (d, i, elements) => {
+      d3.select(elements[i]).classed("mouseover", true)
+      if (isMouseDown) {
+        highlight(elements[i]);
+        //track whats been hovered on to pass to other graphs so they can be interactive
+        let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
+        dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
+      }
+    })
 
-              // Let other charts know
-              dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
-              
-            })
-
-            .on("mouseup", function(d, i){
-              console.log('in mouse up');
-              isMouseDown = false;
-
-            });
-
-            // function brushDrag(element, event, d, i){
-    //   hoverTarget = event.target;
-    //   if (dragTarget){
-    //       console.log("drag: row:", getRow(hoverTarget), 'i:', i);
-    //       d3.select(hoverTarget).attr("classed", "selected");
-    //   }
-    // };
-
-    // function brushStop(element, event, d, i){
-    //     if (dragTarget){
-    //         var targetElement = event.target;
-    //         if(targetElement.nodeName == "TD"){
-    //             console.log("stop", getRow(targetElement), i);
-    //         }
-    //     }
-    //     dragTarget = null;
-    // };
+    // now you know the mouse has moved out of the row area, so you de-highlight
+    .on("mouseout", (d, i, elements) => {
+      d3.select(elements[i]).classed("mouseover", false)
+    })
+    // ############## END MOVING HANDLERS ###############
 
 
+    // ################### CLICKS #####################
+
+    // handles multiple row highlights indicated by a mouse click
+    .on("mousedown", (d, i, elements) => {
+      // new click so remove all prexisting highlights
+      removeHighlights();
+      isMouseDown = true
+      // also have to track this, special mouseover since multiple rows will be highlighted
+      // pass to dispatcher to communicate with other graphs
+      let dispatchString = Object.getOwnPropertyNames(dispatcher._)[0];
+      dispatcher.call(dispatchString, this, table.selectAll(".selected").data());
+    })
+    
+    // handles when user stops holding click - do nothing but track click has ended
+    // still want the highlights until the next click, at which point all previous highlights are removed
+    .on("mouseup", (d, i, elements) => {
+      isMouseDown = false;
+    });
+
+    // ############# END CLICK HANDLERS ##################
+
+    // finished product
     return chart;
   }
 
